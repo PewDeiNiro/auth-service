@@ -62,11 +62,12 @@ public class AuthService {
     }
 
     private void authorize(User user){
-        tokenRepository.findByUser(user).ifPresent(token -> {
+        if (user.getToken() != null){
+            Token userToken = user.getToken();
             user.setToken(null);
-            token.setUser(null);
-            tokenRepository.delete(token);
-        });
+            userToken.setUser(null);
+            tokenRepository.delete(userToken);
+        }
         Token token = Token.builder().token(UUID.randomUUID().toString().replace("-", ""))
                 .release(new Date())
                 .expiry(Date.from(LocalDateTime.now().plusHours(6).atZone(ZoneId.systemDefault()).toInstant()))
